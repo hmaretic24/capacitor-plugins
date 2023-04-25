@@ -1,33 +1,74 @@
 {
-  "name": "capacitor-plugins",
-  "private": true,
+  "name": "@capacitor/browser",
+  "version": "0.0.1",
+  "description": "The Browser API provides the ability to open an in-app browser and subscribe to browser events.",
+  "main": "dist/plugin.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "author": "Ionic <hi@ionicframework.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ionic-team/capacitor-plugins"
+  },
+  "bugs": {
+    "url": "https://github.com/ionic-team/capacitor-plugins/issues"
+  },
+  "keywords": [
+    "capacitor",
+    "plugin",
+    "native"
+  ],
   "scripts": {
-    "build": "lerna run build",
-    "watch": "lerna run --parallel --stream watch",
-    "lint": "npm run scripts:prettier -- --check && lerna run lint",
-    "fmt": "npm run scripts:prettier -- --write && lerna run fmt",
-    "scripts:prettier": "npx prettier \"scripts/**/*.mjs\"",
-    "apply-patches": "node ./scripts/apply-patches.mjs",
-    "toggle-local": "node ./scripts/toggle-local.mjs",
-    "update-all": "node ./scripts/update-all.mjs",
-    "set-capacitor-version": "node ./scripts/set-capacitor-version.mjs",
-    "postinstall": "lerna bootstrap",
-    "publish:cocoapod": "lerna run publish:cocoapod --concurrency 1",
-    "ci:publish:nightly": "lerna publish prerelease --conventional-commits --conventional-prerelease --preid nightly-$(date +\"%Y%m%dT%H%M%S\") --dist-tag nightly --force-publish --no-verify-access --no-changelog --no-git-tag-version --no-push --yes",
-    "ci:publish:alpha": "lerna publish prerelease --conventional-commits --conventional-prerelease --preid alpha --dist-tag next --force-publish --no-verify-access --yes",
-    "ci:publish:beta": "lerna publish prerelease --conventional-commits --conventional-prerelease --preid beta --dist-tag next --force-publish --no-verify-access --yes",
-    "ci:publish:rc": "lerna publish prerelease --conventional-commits --conventional-prerelease --preid rc --dist-tag next --force-publish --no-verify-access --yes",
-    "ci:publish:latest": "lerna publish --conventional-graduate --conventional-commits --dist-tag latest --force-publish --no-verify-access --yes",
-    "ci:publish:dev": "lerna publish prerelease --conventional-commits --conventional-prerelease --preid dev-$(date +\"%Y%m%dT%H%M%S\") --dist-tag dev --force-publish --no-verify-access --no-changelog --no-git-tag-version --no-push --yes"
+    "verify": "npm run verify:ios && npm run verify:android && npm run verify:web",
+    "verify:ios": "cd ios && pod install && xcodebuild -workspace Plugin.xcworkspace -scheme Plugin && cd ..",
+    "verify:android": "cd android && ./gradlew clean build test && cd ..",
+    "verify:web": "npm run build",
+    "lint": "npm run eslint && npm run prettier -- --check && npm run swiftlint -- lint",
+    "fmt": "npm run eslint -- --fix && npm run prettier -- --write && npm run swiftlint -- autocorrect --format",
+    "eslint": "eslint . --ext ts",
+    "prettier": "prettier \"**/*.{css,html,ts,js,java}\"",
+    "swiftlint": "node-swiftlint",
+    "docgen": "docgen --api BrowserPlugin --output-readme README.md --output-json dist/docs.json",
+    "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.js",
+    "clean": "rimraf ./dist",
+    "watch": "tsc --watch",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@actions/core": "^1.9.1",
-    "@ionic/prettier-config": "^1.0.1",
-    "@types/prompts": "^2.0.8",
-    "esm": "^3.2.25",
-    "lerna": "^3.22.1",
-    "prettier": "~2.3.0",
-    "prompts": "^2.3.2"
+    "@capacitor/android": "^3.0.0-alpha.5",
+    "@capacitor/core": "^3.0.0-alpha.5",
+    "@capacitor/docgen": "^0.0.8",
+    "@capacitor/ios": "^3.0.0-alpha.5",
+    "@ionic/eslint-config": "^0.3.0",
+    "@ionic/prettier-config": "^1.0.0",
+    "@ionic/swiftlint-config": "^1.1.2",
+    "@rollup/plugin-node-resolve": "^8.1.0",
+    "eslint": "^7.11.0",
+    "prettier": "^2.0.5",
+    "prettier-plugin-java": "^0.8.3",
+    "rimraf": "^3.0.0",
+    "rollup": "^2.29.0",
+    "swiftlint": "^1.0.1",
+    "typescript": "~3.9.7"
   },
-  "prettier": "@ionic/prettier-config"
+  "peerDependencies": {
+    "@capacitor/core": "^3.0.0-alpha.5"
+  },
+  "prettier": "@ionic/prettier-config",
+  "swiftlint": "@ionic/swiftlint-config",
+  "eslintConfig": {
+    "extends": "@ionic/eslint-config/recommended"
+  },
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    },
+    "android": {
+      "src": "android"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
