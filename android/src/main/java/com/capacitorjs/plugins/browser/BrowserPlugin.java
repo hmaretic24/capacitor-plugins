@@ -1,19 +1,14 @@
 package com.capacitorjs.plugins.browser;
 
-import android.graphics.Color;
 import android.net.Uri;
-import android.content.Context;
-import android.content.Intent;
 import com.getcapacitor.Logger;
-import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
+import com.getcapacitor.annotation.CapacitorPlugin;
+import com.getcapacitor.util.WebColor;
 
-
-@NativePlugin(name = "Browser", requestCodes = {PluginRequestCodes.BROWSER_OPEN_CHROME_TAB})
-
-
+@CapacitorPlugin(name = "Browser")
 public class BrowserPlugin extends Plugin {
 
     private Browser implementation;
@@ -47,7 +42,7 @@ public class BrowserPlugin extends Plugin {
         String colorString = call.getString("toolbarColor");
         Integer toolbarColor = null;
         if (colorString != null) try {
-            toolbarColor = Color.parseColor(colorString);
+            toolbarColor = WebColor.parseColor(colorString);
         } catch (IllegalArgumentException ex) {
             Logger.error(getLogTag(), "Invalid color provided for toolbarColor. Using default", null);
         }
@@ -59,12 +54,7 @@ public class BrowserPlugin extends Plugin {
 
     @PluginMethod
     public void close(PluginCall call) {
-        Context context = getActivity().getBaseContext();
-        Intent myIntent = new Intent(context, getActivity().getClass());
-        myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(myIntent);
-        call.resolve();
+        call.unimplemented();
     }
 
     @Override
